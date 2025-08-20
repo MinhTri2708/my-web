@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tìm hiểu</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, sans-serif;
+      color: #fdf2f8;
+      background: radial-gradient(circle at center, #9d174d, #581c87);
+      display: grid;
+      place-items: center;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    .heart-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #f472b6;
+      transform: rotate(45deg);
+      animation: float 8s linear infinite;
+    }
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #f472b6;
+      border-radius: 50%;
+    }
+    .heart::before { top: -10px; left: 0; }
+    .heart::after  { left: -10px; top: 0; }
+    @keyframes float {
+      from { transform: rotate(45deg) translateY(100vh); opacity: 1; }
+      to   { transform: rotate(45deg) translateY(-120vh); opacity: 0; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      width: min(90vw, 500px);
+      background: rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 28px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      text-align: center;
+      border: 1px solid rgba(255,255,255,.2);
+    }
+    h1 { margin-bottom: 20px; }
+    .btns { display: grid; gap: 12px; }
+    button {
+      padding: 12px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      border: 0;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: transform .05s, background .3s;
+    }
+    button:active { transform: translateY(2px); }
+    .abandon { background: #f43f5e; color: #fff; }
+    .explore { background: #facc15; color: #3f3f46; }
+    .message {
+      margin-top: 20px;
+      font-size: 18px;
+      min-height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="heart-bg" id="heart-bg"></div>
+
+  <main class="card">
+    <h1>Bạn có muốn tìm hiểu tiếp không?</h1>
+    <div class="btns">
+      <button id="btn-abandon" class="abandon">Từ bỏ</button>
+      <button id="btn-explore" class="explore">Tìm hiểu</button>
+    </div>
+    <div class="message" id="message"></div>
+  </main>
+
+  <!-- Nhạc nền lofi buồn nhẹ -->
+  <audio id="bg-music" autoplay loop>
+    <source src="https://cdn.pixabay.com/download/audio/2022/07/22/audio_9f9f25f3c2.mp3?filename=lofi-study-112191.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const abandonBtn = document.getElementById('btn-abandon');
+    const exploreBtn = document.getElementById('btn-explore');
+    const message   = document.getElementById('message');
+    let exploreClicks = 0;
+    let locked = false;
+
+    function lockSite(msg) {
+      document.body.innerHTML = `<div style=\"display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;color:white;text-align:center;\">${msg}<br><br><strong>Trang web đã bị khóa.</strong></div>`;
+      locked = true;
+    }
+
+    abandonBtn.addEventListener('click', () => {
+      if (locked) return;
+      lockSite("Mọi chuyện vẫn sẽ tiếp diễn bình thường và không có gì thay đổi.");
+    });
+
+    exploreBtn.addEventListener('click', () => {
+      if (locked) return;
+      exploreClicks++;
+      if (exploreClicks === 1) {
+        exploreBtn.textContent = "Sẽ không được quay lại";
+      } else if (exploreClicks === 2) {
+        lockSite("Có lẽ anh không nên níu kéo mối quan hệ này nữa.");
+      }
+    });
+
+    // Tạo hiệu ứng trái tim bay
+    const heartBg = document.getElementById('heart-bg');
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (6 + Math.random() * 4) + 's';
+      heartBg.appendChild(heart);
+      setTimeout(() => heart.remove(), 10000);
+    }
+    setInterval(createHeart, 600);
+
+    // Tự động phát nhạc khi user tương tác (để tránh chặn autoplay)
+    const music = document.getElementById('bg-music');
+    document.body.addEventListener('click', () => {
+      if (music.paused) music.play().catch(()=>{});
+    }, { once: true });
+  </script>
+</body>
+</html>
